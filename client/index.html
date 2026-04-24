@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BFHL Hierarchy Processor — parse node relationships, detect cycles, and visualize tree structures.">
+  <title>BFHL — Hierarchy Processor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/forge.css">
+</head>
+<body>
+  <div class="shell">
+
+    <!-- header bar -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <span class="brand-icon">⬡</span>
+        <h1>BFHL Processor</h1>
+      </div>
+      <span class="topbar-tag">SRM Challenge</span>
+    </header>
+
+    <main class="workspace">
+
+      <!-- left panel: input -->
+      <section class="panel panel-input" id="inputPanel">
+        <div class="panel-head">
+          <span class="panel-label">Input</span>
+          <span class="panel-hint">one edge per item, format: X→Y</span>
+        </div>
+
+        <textarea id="edgeInput" class="edge-textarea" rows="10"
+          placeholder='["A->B", "A->C", "B->D", "C->E", "E->F", "X->Y", "Y->Z", "Z->X", "P->Q", "Q->R", "G->H", "G->H", "G->I", "hello", "1->2", "A->"]'
+        ></textarea>
+
+        <div class="input-actions">
+          <button id="btnSubmit" class="btn btn-run" type="button">
+            <span class="btn-icon">▶</span> Process
+          </button>
+          <button id="btnClear" class="btn btn-ghost" type="button">Clear</button>
+        </div>
+
+        <div id="errorBox" class="error-box hidden"></div>
+
+        <!-- processing steps panel -->
+        <details id="stepsPanel" class="steps-panel hidden">
+          <summary class="steps-toggle">Processing Steps</summary>
+          <ol id="stepsList" class="steps-list"></ol>
+        </details>
+      </section>
+
+      <!-- right panel: results -->
+      <section class="panel panel-results hidden" id="resultsPanel">
+        <div class="panel-head">
+          <span class="panel-label">Results</span>
+          <div class="view-toggle">
+            <button id="btnTreeView" class="toggle-btn active" data-view="tree">🌳 Tree</button>
+            <button id="btnJsonView" class="toggle-btn" data-view="json">{ } JSON</button>
+          </div>
+        </div>
+
+        <!-- tabs -->
+        <nav class="result-tabs" id="resultTabs">
+          <button class="tab active" data-tab="hierarchies">Hierarchies</button>
+          <button class="tab" data-tab="cycles">Cycles</button>
+          <button class="tab" data-tab="invalid">Invalid</button>
+          <button class="tab" data-tab="duplicates">Duplicates</button>
+          <button class="tab" data-tab="summary">Summary</button>
+        </nav>
+
+        <!-- tab content -->
+        <div class="tab-body" id="tabBody">
+          <div class="tab-pane active" data-pane="hierarchies" id="paneHierarchies"></div>
+          <div class="tab-pane" data-pane="cycles" id="paneCycles"></div>
+          <div class="tab-pane" data-pane="invalid" id="paneInvalid"></div>
+          <div class="tab-pane" data-pane="duplicates" id="paneDuplicates"></div>
+          <div class="tab-pane" data-pane="summary" id="paneSummary"></div>
+        </div>
+
+        <!-- raw JSON view (hidden by default) -->
+        <div class="json-view hidden" id="jsonView">
+          <pre id="jsonOutput"></pre>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="bottombar">
+      <span>Sujal Pareek · RA2311033010169 · sp9303@srmist.edu.in</span>
+    </footer>
+  </div>
+
+  <script src="js/apiLink.js"></script>
+  <script src="js/treeRenderer.js"></script>
+  <script src="js/panelManager.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
