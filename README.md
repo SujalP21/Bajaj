@@ -1,53 +1,57 @@
 # BFHL Hierarchy Processor
 
-Full-stack application for the SRM Full Stack Engineering Challenge - Bajaj Finserv Health Limited (BFHL).
+Full-stack application for the SRM Full Stack Engineering Challenge. Accepts directed edge strings, validates them, builds tree hierarchies, detects cycles, and returns structured insights via a REST API with an interactive frontend.
 
-## What it does
+## Live URLs
 
-Accepts an array of directed edge strings (e.g. `"A->B"`), validates them, builds tree hierarchies, detects cycles, and returns structured insights via a REST API. The frontend visualizes results with interactive tree views.
+- **Frontend**: https://bajaj-bfhl-engine.onrender.com
+- **API Base**: https://bajaj-bfhl-engine.onrender.com
+- **API Endpoint**: `POST https://bajaj-bfhl-engine.onrender.com/bfhl`
 
 ## Tech Stack
 
 - **Backend**: Node.js + Express
 - **Frontend**: Vanilla HTML / CSS / JavaScript (no frameworks, no templates)
+- **Hosting**: Render (single service for both API and frontend)
 
 ## Project Structure
 
 ```
 ├── server/
-│   ├── app.js                  # Express entry point
+│   ├── app.js                  # Express entry point + static serving
 │   ├── routes/bfhl.js          # POST /bfhl handler
 │   ├── engine/
-│   │   ├── inputSanitizer.js   # Validate & classify input
-│   │   ├── graphForge.js       # Build graph, handle duplicates
-│   │   ├── cycleProbe.js       # Iterative cycle detection
-│   │   ├── treeShaper.js       # Nested tree builder + depth
-│   │   └── summaryCompiler.js  # Aggregate summary stats
+│   │   ├── inputSanitizer.js   # Validate & classify input strings
+│   │   ├── graphForge.js       # Build graph, deduplicate, handle multi-parent
+│   │   ├── cycleProbe.js       # Iterative cycle detection (3-state coloring)
+│   │   ├── treeShaper.js       # Nested tree builder + depth calculation
+│   │   └── summaryCompiler.js  # Aggregate summary statistics
 │   └── render.yaml             # Render deploy config
 ├── client/
 │   ├── index.html
-│   ├── css/forge.css           # Handwritten stylesheet
+│   ├── css/forge.css           # Handwritten dark industrial theme
 │   ├── js/
 │   │   ├── main.js             # App orchestrator
-│   │   ├── apiLink.js          # API communication
-│   │   ├── treeRenderer.js     # Tree visualization
-│   │   └── panelManager.js     # UI tab/toggle management
-│   └── vercel.json             # Vercel deploy config
+│   │   ├── apiLink.js          # API communication layer
+│   │   ├── treeRenderer.js     # Interactive tree visualization
+│   │   └── panelManager.js     # Tab/toggle/collapse management
+│   └── vercel.json
+├── package.json
+├── .gitignore
+└── README.md
 ```
 
 ## Running Locally
 
 ```bash
-# Backend
+# Install dependencies
 cd server
 npm install
-node app.js
-# → http://localhost:3000
 
-# Frontend
-# Open client/index.html in a browser, or use a local server:
-cd client
-npx serve .
+# Start server (serves both API and frontend)
+cd ..
+node server/app.js
+# → http://localhost:3000
 ```
 
 ## API Usage
@@ -55,32 +59,48 @@ npx serve .
 ```
 POST /bfhl
 Content-Type: application/json
+```
 
+### Request
+
+```json
 {
-  "data": ["A->B", "A->C", "B->D", "X->Y", "Y->Z", "Z->X"]
+  "data": ["A->B", "A->C", "B->D", "C->E", "E->F", "X->Y", "Y->Z", "Z->X", "P->Q", "Q->R", "G->H", "G->H", "G->I", "hello", "1->2", "A->"]
 }
 ```
 
-## Deployment
+### Response
 
-- **Backend** → Render (Web Service, Node runtime)
-- **Frontend** → Vercel (static site)
-
-After deploying the backend to Render, update `API_BASE` in `client/js/apiLink.js` with your Render URL.
-
-## Test Cases
-
-**Basic tree:**
 ```json
-{"data": ["A->B", "B->C"]}
+{
+  "user_id": "sujalpareek_19052004",
+  "email_id": "sp9303@srmist.edu.in",
+  "college_roll_number": "RA2311033010169",
+  "hierarchies": [
+    { "root": "A", "tree": { "A": { "B": { "D": {} }, "C": { "E": { "F": {} } } } }, "depth": 4 },
+    { "root": "G", "tree": { "G": { "H": {}, "I": {} } }, "depth": 2 },
+    { "root": "P", "tree": { "P": { "Q": { "R": {} } } }, "depth": 3 },
+    { "root": "X", "tree": {}, "has_cycle": true }
+  ],
+  "invalid_entries": ["hello", "1->2", "A->"],
+  "duplicate_edges": ["G->H"],
+  "summary": { "total_trees": 3, "total_cycles": 1, "largest_tree_root": "A" }
+}
 ```
 
-**Cycle detection:**
-```json
-{"data": ["X->Y", "Y->Z", "Z->X"]}
-```
+## Features
 
-**Mixed input:**
-```json
-{"data": ["A->B", "A->C", "B->D", "C->E", "E->F", "X->Y", "Y->Z", "Z->X", "P->Q", "Q->R", "G->H", "G->H", "G->I", "hello", "1->2", "A->"]}
-```
+- **Input Validation**: Trims whitespace, validates `X->Y` format (single uppercase letters), rejects self-loops
+- **Duplicate Detection**: First occurrence wins, subsequent duplicates reported once
+- **Multi-parent Handling**: First parent edge wins, later parent edges silently discarded
+- **Cycle Detection**: Iterative 3-state coloring algorithm (no recursive DFS)
+- **Tree Visualization**: Interactive expandable tree cards with depth indicators
+- **Tabbed Results**: Separate views for Hierarchies, Cycles, Invalid entries, Duplicates, and Summary
+- **View Toggle**: Switch between structured Tree view and raw JSON output
+- **CORS Enabled**: API accessible from any origin
+
+## Author
+
+**Sujal Pareek**
+- Roll Number: RA2311033010169
+- Email: sp9303@srmist.edu.in
