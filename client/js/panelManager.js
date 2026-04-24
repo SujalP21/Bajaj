@@ -15,20 +15,20 @@
 
       var targetPane = clicked.getAttribute('data-tab');
 
-      // deactivate all tabs
+      // deactivate all tabs visually
       var allTabs = tabContainer.querySelectorAll('.tab');
       for (var i = 0; i < allTabs.length; i++) {
         allTabs[i].classList.remove('active');
       }
       clicked.classList.add('active');
 
-      // show matching pane
+      // hide all panes, show the target one
       var allPanes = document.querySelectorAll('.tab-pane');
       for (var j = 0; j < allPanes.length; j++) {
-        allPanes[j].classList.remove('active');
+        allPanes[j].style.display = 'none';
       }
       var pane = document.querySelector('.tab-pane[data-pane="' + targetPane + '"]');
-      if (pane) pane.classList.add('active');
+      if (pane) pane.style.display = 'block';
     });
   }
 
@@ -37,28 +37,30 @@
     var btnJson = document.getElementById('btnJsonView');
     var tabBody = document.getElementById('tabBody');
     var jsonView = document.getElementById('jsonView');
+    var resultTabs = document.getElementById('resultTabs');
 
     if (!btnTree || !btnJson) return;
 
     btnTree.addEventListener('click', function () {
       btnTree.classList.add('active');
       btnJson.classList.remove('active');
-      tabBody.classList.remove('hidden');
-      jsonView.classList.add('hidden');
+      tabBody.style.display = '';
+      jsonView.style.display = 'none';
+      resultTabs.style.display = '';
     });
 
     btnJson.addEventListener('click', function () {
       btnJson.classList.add('active');
       btnTree.classList.remove('active');
-      jsonView.classList.remove('hidden');
-      tabBody.classList.add('hidden');
-      // also hide tab nav when in JSON mode
+      jsonView.style.display = '';
+      tabBody.style.display = 'none';
+      resultTabs.style.display = 'none';
     });
   }
 
   function initCardCollapse() {
     document.addEventListener('click', function (e) {
-      // hierarchy card header click → toggle body
+      // hierarchy card header click -> toggle body
       var header = e.target.closest('.hierarchy-header');
       if (header) {
         var bodyId = header.getAttribute('data-target');
@@ -67,7 +69,7 @@
         return;
       }
 
-      // tree node label click → toggle branch
+      // tree node label click -> toggle branch
       var label = e.target.closest('.tree-node-label');
       if (label) {
         var nid = label.getAttribute('data-nid');

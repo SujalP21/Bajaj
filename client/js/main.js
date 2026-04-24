@@ -12,6 +12,10 @@
   var stepsPanel = document.getElementById('stepsPanel');
   var stepsList = document.getElementById('stepsList');
   var jsonOutput = document.getElementById('jsonOutput');
+  var tabBody = document.getElementById('tabBody');
+  var jsonView = document.getElementById('jsonView');
+  var btnTreeView = document.getElementById('btnTreeView');
+  var btnJsonView = document.getElementById('btnJsonView');
 
   // pane containers
   var paneHierarchies = document.getElementById('paneHierarchies');
@@ -20,10 +24,10 @@
   var paneDuplicates = document.getElementById('paneDuplicates');
   var paneSummary = document.getElementById('paneSummary');
 
-  // last response for toggle
+  // last response
   var lastResponse = null;
 
-  // init panel interactions
+  // init interactions
   PanelManager.initTabs();
   PanelManager.initViewToggle();
   PanelManager.initCardCollapse();
@@ -31,7 +35,7 @@
   btnSubmit.addEventListener('click', handleSubmit);
   btnClear.addEventListener('click', handleClear);
 
-  // allow Ctrl+Enter to submit
+  // Ctrl+Enter shortcut
   edgeInput.addEventListener('keydown', function (e) {
     if (e.ctrlKey && e.key === 'Enter') handleSubmit();
   });
@@ -39,14 +43,14 @@
   function handleClear() {
     edgeInput.value = '';
     errorBox.classList.add('hidden');
-    resultsPanel.classList.add('hidden');
+    resultsPanel.style.display = 'none';
     stepsPanel.classList.add('hidden');
     lastResponse = null;
   }
 
   async function handleSubmit() {
     errorBox.classList.add('hidden');
-    resultsPanel.classList.add('hidden');
+    resultsPanel.style.display = 'none';
 
     var raw = edgeInput.value.trim();
     if (!raw) {
@@ -54,12 +58,11 @@
       return;
     }
 
-    // parse input
+    // parse input — accept JSON array or line-separated entries
     var dataArray;
     try {
       dataArray = JSON.parse(raw);
     } catch (_) {
-      // try comma-separated fallback
       dataArray = raw.split('\n')
         .map(function (s) { return s.trim().replace(/^["',]+|["',]+$/g, ''); })
         .filter(function (s) { return s.length > 0; });
@@ -70,10 +73,8 @@
       return;
     }
 
-    // show processing steps
     showSteps(dataArray);
 
-    // call API
     btnSubmit.classList.add('loading');
     btnSubmit.disabled = true;
 
@@ -124,13 +125,30 @@
   }
 
   function renderResults(resp) {
-    resultsPanel.classList.remove('hidden');
+    // force tree view mode on fresh render
+    btnTreeView.classList.add('active');
+    btnJsonView.classList.remove('active');
+    tabBody.style.display = '';
+    jsonView.style.display = 'none';
 
-    // JSON view
+    // populate JSON view for later toggle
     jsonOutput.textContent = JSON.stringify(resp, null, 2);
 
-    // update badges
+    // update tab badges
     PanelManager.updateTabBadges(resp);
+
+    // reset to first tab
+    var allTabs = document.querySelectorAll('.tab');
+    for (var ti = 0; ti < allTabs.length; ti++) {
+      allTabs[ti].classList.remove('active');
+    }
+    allTabs[0].classList.add('active');
+
+    var allPanes = document.querySelectorAll('.tab-pane');
+    for (var pi = 0; pi < allPanes.length; pi++) {
+      allPanes[pi].style.display = 'none';
+    }
+    paneHierarchies.style.display = 'block';
 
     // separate trees and cycles
     var trees = [];
@@ -144,7 +162,7 @@
       }
     }
 
-    // render hierarchies (non-cyclic)
+    // render hierarchies (non-cyclic trees only)
     if (trees.length === 0) {
       paneHierarchies.innerHTML = emptyState('📭', 'No valid trees found.');
     } else {
@@ -206,7 +224,9 @@
       + statCard(sum.largest_tree_root || '—', 'Largest Root')
       + '</div>';
 
-    // add final step
+    // now show the results panel
+    resultsPanel.style.display = '';
+
     addStep('Response received — ' + hierarchies.length + ' groups processed.', 'ok');
   }
 

@@ -51,7 +51,7 @@
       </section>
 
       <!-- right panel: results -->
-      <section class="panel panel-results hidden" id="resultsPanel">
+      <section class="panel panel-results" id="resultsPanel" style="display:none">
         <div class="panel-head">
           <span class="panel-label">Results</span>
           <div class="view-toggle">
@@ -71,15 +71,15 @@
 
         <!-- tab content -->
         <div class="tab-body" id="tabBody">
-          <div class="tab-pane active" data-pane="hierarchies" id="paneHierarchies"></div>
-          <div class="tab-pane" data-pane="cycles" id="paneCycles"></div>
-          <div class="tab-pane" data-pane="invalid" id="paneInvalid"></div>
-          <div class="tab-pane" data-pane="duplicates" id="paneDuplicates"></div>
-          <div class="tab-pane" data-pane="summary" id="paneSummary"></div>
+          <div class="tab-pane" data-pane="hierarchies" id="paneHierarchies" style="display:block"></div>
+          <div class="tab-pane" data-pane="cycles" id="paneCycles" style="display:none"></div>
+          <div class="tab-pane" data-pane="invalid" id="paneInvalid" style="display:none"></div>
+          <div class="tab-pane" data-pane="duplicates" id="paneDuplicates" style="display:none"></div>
+          <div class="tab-pane" data-pane="summary" id="paneSummary" style="display:none"></div>
         </div>
 
         <!-- raw JSON view (hidden by default) -->
-        <div class="json-view hidden" id="jsonView">
+        <div class="json-view" id="jsonView" style="display:none">
           <pre id="jsonOutput"></pre>
         </div>
       </section>

@@ -1,6 +1,6 @@
 # BFHL Hierarchy Processor
 
-Full-stack application for the SRM Full Stack Engineering Challenge.
+Full-stack application for the SRM Full Stack Engineering Challenge - Bajaj Finserv Health Limited (BFHL).
 
 ## What it does
 
