@@ -1,6 +1,6 @@
 # BFHL Hierarchy Processor
 
-Full-stack application for the SRM Full Stack Engineering Challenge. Accepts directed edge strings, validates them, builds tree hierarchies, detects cycles, and returns structured insights via a REST API with an interactive frontend.
+Full-stack application for the BFHL - SRM Full Stack Engineering Challenge. Accepts directed edge strings, validates them, builds tree hierarchies, detects cycles, and returns structured insights via a REST API with an interactive frontend.
 
 ## Live URLs
 
